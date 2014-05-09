@@ -16,10 +16,10 @@ public class Main {
 		BigInteger n = p.multiply(q);		
 		BigInteger phi = (p.subtract(BigInteger.ONE).multiply(q.subtract(BigInteger.ONE)));
 		BigInteger e = new BigInteger("65537");
-		int d = getTheD(phi.intValue(), e.intValue());
-		BigInteger cipher = produceCipher("670", e, n);
-		System.out.println(cipher);
-		System.out.println(decipher(cipher, d, n));
+		BigInteger d = getTheD(phi, e);
+		BigInteger cipher = produceCipher("78", e, n);
+		System.out.println("Cipher: " + cipher);
+		System.out.println("Deciphered: " + decipher(cipher, d, n));
 	}
 	
 	public int gcd(int a, int b) {
@@ -30,18 +30,18 @@ public class Main {
 		}
 	}
 	
-	public int getTheD(int phi, int e) {
-		int[] results = extendedEuclid(e, phi);
-		int b = results[1];
-		int d = 0;
+	public BigInteger getTheD(BigInteger phi, BigInteger e) {
+		int[] results = extendedEuclid(e.intValue(), phi.intValue());
+		BigInteger b = new BigInteger("" + results[1]);
+		BigInteger d = new BigInteger("0");
 		
-		if(0 <= b && b < phi) {
+		if(b.compareTo(new BigInteger("1")) == 1 && b.compareTo(phi) == -1) {
 			d = b;
-		} else if(b >= phi) {
-			d = b % phi;
-		} else if(b < 0) {
-			d = b + phi;
-		}		
+		} else if(b.compareTo(phi) >= 0) {
+			d = b.mod(phi);
+		} else if(b.compareTo(new BigInteger("0")) == -1) {
+			d = b.add(phi);
+		}
 		return d;
 	}
 	
@@ -94,7 +94,7 @@ public class Main {
 		return msg.modPow(new BigInteger("" + e), new BigInteger("" + m));
 	}
 	
-	public BigInteger decipher(BigInteger c, int d, BigInteger n) {
-		return c.modPow(new BigInteger("" + d), n);
+	public BigInteger decipher(BigInteger c, BigInteger d, BigInteger n) {
+		return c.modPow(d, n);
 	}
 }
