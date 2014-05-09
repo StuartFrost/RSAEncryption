@@ -5,32 +5,45 @@ import java.util.Random;
 
 public class Main {
 	public Random random = new Random();
+	private BigInteger p;
+	private BigInteger q;
+	private int primeSize = 256;
 	
 	public static void main(String[] args) {
 		new Main();
 	}
 	
 	public Main() {
-		BigInteger p = BigInteger.probablePrime(8, random);
-		BigInteger q = BigInteger.probablePrime(8, random);
+		p = BigInteger.probablePrime(primeSize, random);
+		q = BigInteger.probablePrime(primeSize, random);
 		BigInteger n = p.multiply(q);		
 		BigInteger phi = (p.subtract(BigInteger.ONE).multiply(q.subtract(BigInteger.ONE)));
 		BigInteger e = new BigInteger("65537");
-		BigInteger d = getTheD(phi, e);
-		BigInteger cipher = produceCipher("78", e, n);
+		checkE(e, phi);
+		BigInteger d = getD(phi, e);
+		
+		BigInteger cipher = produceCipher("Hello Mr Bond, i've been expecting you since we last met...", e, n);
 		System.out.println("Cipher: " + cipher);
 		System.out.println("Deciphered: " + decipher(cipher, d, n));
 	}
 	
-	public int gcd(int a, int b) {
-		if(b == 0) {
+	public BigInteger gcd(BigInteger a, BigInteger b) {
+		if(b.compareTo(BigInteger.ZERO) == 0) {
 			return a;
 		} else {
-			return gcd(b, a % b);
+			return gcd(b, a.mod(b));
 		}
 	}
 	
-	public BigInteger getTheD(BigInteger phi, BigInteger e) {
+	public void checkE(BigInteger e, BigInteger phi) {
+		if(e.compareTo(BigInteger.ONE) == 1 && e.compareTo(phi) == -1 && gcd(phi, e).compareTo(BigInteger.ONE) != 0) {
+			p = BigInteger.probablePrime(primeSize, random);
+			q = BigInteger.probablePrime(primeSize, random);
+			checkE(e, phi);
+		}
+	}
+	
+	public BigInteger getD(BigInteger phi, BigInteger e) {
 		BigInteger[] results = extendedEuclid(e, phi);
 		BigInteger b = results[1];
 		BigInteger d = BigInteger.ZERO;
@@ -90,11 +103,17 @@ public class Main {
 	 * @param n - The 'mod' number in the equation.
 	 * @return int - Encrypted cipher of message.*/
 	public BigInteger produceCipher(String message, BigInteger e, BigInteger m) {
-		BigInteger msg = new BigInteger(message);
+		BigInteger msg = new BigInteger(message.getBytes());
 		return msg.modPow(new BigInteger("" + e), new BigInteger("" + m));
 	}
 	
-	public BigInteger decipher(BigInteger c, BigInteger d, BigInteger n) {
-		return c.modPow(d, n);
+	public String decipher(BigInteger c, BigInteger d, BigInteger n) {
+		c = c.modPow(d, n);
+		byte[] letters = c.toByteArray();
+		String result = "";
+		for(int i = 0; i < letters.length; i++) {
+			result += (char) letters[i];
+		}
+		return result;
 	}
 }
