@@ -31,15 +31,15 @@ public class Main {
 	}
 	
 	public BigInteger getTheD(BigInteger phi, BigInteger e) {
-		int[] results = extendedEuclid(e.intValue(), phi.intValue());
-		BigInteger b = new BigInteger("" + results[1]);
-		BigInteger d = new BigInteger("0");
+		BigInteger[] results = extendedEuclid(e, phi);
+		BigInteger b = results[1];
+		BigInteger d = BigInteger.ZERO;
 		
-		if(b.compareTo(new BigInteger("1")) == 1 && b.compareTo(phi) == -1) {
+		if(b.compareTo(BigInteger.ONE) == 1 && b.compareTo(phi) == -1) {
 			d = b;
 		} else if(b.compareTo(phi) >= 0) {
 			d = b.mod(phi);
-		} else if(b.compareTo(new BigInteger("0")) == -1) {
+		} else if(b.compareTo(BigInteger.ZERO) == -1) {
 			d = b.add(phi);
 		}
 		return d;
@@ -52,21 +52,21 @@ public class Main {
 		g, y, x = egcd(b % a, a)
 	return (g, x - (b // a) * y, y)
 	 */
-	public int[] extendedEuclid(int a, int b) {
-		int[] results = new int[3];
+	public BigInteger[] extendedEuclid(BigInteger a, BigInteger b) {
+		BigInteger[] results = new BigInteger[3];
 		
-		if(a == 0) {
+		if(a.compareTo(BigInteger.ZERO) == 0) {
 			results[0] = b;
-			results[1] = 0;
-			results[2] = 1;
+			results[1] = BigInteger.ZERO;
+			results[2] = BigInteger.ONE;
 			return results;
 		} else {
-			int[] recurse = extendedEuclid(b % a, a);
-			int g = recurse[0];
-			int y = recurse[1];
-			int x = recurse[2];
+			BigInteger[] recurse = extendedEuclid(b.mod(a), a);
+			BigInteger g = recurse[0];
+			BigInteger y = recurse[1];
+			BigInteger x = recurse[2];
 			results[0] = g;
-			results[1] = x - (b / a) * y;
+			results[1] = x.subtract(b.divide(a).multiply(y));
 			results[2] = y;
 		}				
 		return results;
