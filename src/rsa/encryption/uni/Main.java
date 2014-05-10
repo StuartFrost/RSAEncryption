@@ -7,7 +7,7 @@ public class Main {
 	public Random random = new Random();
 	private BigInteger p;
 	private BigInteger q;
-	private int primeSize = 256;
+	private int primeSize = 8;
 	
 	public static void main(String[] args) {
 		new Main();
@@ -16,17 +16,21 @@ public class Main {
 	public Main() {
 		p = BigInteger.probablePrime(primeSize, random);
 		q = BigInteger.probablePrime(primeSize, random);
+		System.out.println("p: " + p + ", q: " + q);
 		BigInteger n = p.multiply(q);		
 		BigInteger phi = (p.subtract(BigInteger.ONE).multiply(q.subtract(BigInteger.ONE)));
 		BigInteger e = new BigInteger("65537");
 		checkE(e, phi);
 		BigInteger d = getD(phi, e);
 		
-		BigInteger cipher = produceCipher("Hello Mr Bond, i've been expecting you since we last met...", e, n);
-		System.out.println("Cipher: " + cipher);
-		System.out.println("Deciphered: " + decipher(cipher, d, n));
+		BigInteger cipher = produceCipher("Hi", e, n);
+		//System.out.println("Cipher: " + cipher);
+		//System.out.println("Deciphered: " + decipher(cipher, d, n));
+		System.out.println(gcd(p, q));
 	}
 	
+	/** Calculates the greatest common divisor of two numbers.
+	 * @return - A BigInteger with a value of the GCD of the two parameters. */
 	public BigInteger gcd(BigInteger a, BigInteger b) {
 		if(b.compareTo(BigInteger.ZERO) == 0) {
 			return a;
@@ -35,6 +39,9 @@ public class Main {
 		}
 	}
 	
+	/** Checks 1 < e < phi and that e and phi are co-prime. If they are not, it generates new primes for p & q and checks again.
+	 * @param e - Value of e.
+	 * @param phi - Value of phi calculated earlier. */
 	public void checkE(BigInteger e, BigInteger phi) {
 		if(e.compareTo(BigInteger.ONE) == 1 && e.compareTo(phi) == -1 && gcd(phi, e).compareTo(BigInteger.ONE) != 0) {
 			p = BigInteger.probablePrime(primeSize, random);
@@ -43,11 +50,16 @@ public class Main {
 		}
 	}
 	
+	/** Generates the private key using extendedEuclid method.
+	 * @param phi - The value of phi passed into extendedEuclid method.
+	 * @param e - The value of e to be passed into extendedEuclid method.
+	 * @return The value of d*/
 	public BigInteger getD(BigInteger phi, BigInteger e) {
 		BigInteger[] results = extendedEuclid(e, phi);
-		BigInteger b = results[1];
+		BigInteger b = results[1]; //Only 2nd item in array required, others are only used for the calculations
 		BigInteger d = BigInteger.ZERO;
 		
+		//There are 3 possible outcomes for value of b, depending on which IF it falls under determines value of d
 		if(b.compareTo(BigInteger.ONE) == 1 && b.compareTo(phi) == -1) {
 			d = b;
 		} else if(b.compareTo(phi) >= 0) {
@@ -65,6 +77,10 @@ public class Main {
 		g, y, x = egcd(b % a, a)
 	return (g, x - (b // a) * y, y)
 	 */
+	/** Recursive algorithm that given 2 BigIntegers, solves euclids extended algorithm. 
+	 * @param a - First number, in this case the value of e.
+	 * @param b - Second number, in this case value of phi.
+	 * @return An array of BigIntegers, the 2nd object used to determine d in getD method.*/
 	public BigInteger[] extendedEuclid(BigInteger a, BigInteger b) {
 		BigInteger[] results = new BigInteger[3];
 		
@@ -107,12 +123,16 @@ public class Main {
 		return msg.modPow(new BigInteger("" + e), new BigInteger("" + m));
 	}
 	
-	public String decipher(BigInteger c, BigInteger d, BigInteger n) {
-		c = c.modPow(d, n);
-		byte[] letters = c.toByteArray();
+	/** Takes a cipher and decrypts it to its original string form.
+	 * @param c - Encrypted message. 
+	 * @param d - Value of d calculate in getD method.
+	 * @param m - Modulus value, in this case p * q as calculated earlier.*/
+	public String decipher(BigInteger c, BigInteger d, BigInteger m) {
+		c = c.modPow(d, m);
+		byte[] letters = c.toByteArray(); //Transforms decrypted cipher into ascii values, with each item in array representing 1 character
 		String result = "";
 		for(int i = 0; i < letters.length; i++) {
-			result += (char) letters[i];
+			result += (char) letters[i]; //Casts ascii values from each item in array to a char which is added to final string
 		}
 		return result;
 	}

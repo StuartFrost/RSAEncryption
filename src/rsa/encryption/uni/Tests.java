@@ -9,37 +9,52 @@ import org.junit.Test;
 public class Tests {
 	Main main = new Main();
 	
-	/*@Test
+	@Test
 	public void checkExtdEuclid() {
-		assertEquals(-11, main.extendedEuclid(13, 72)[1]);
+		BigInteger a = new BigInteger("13");
+		BigInteger b = new BigInteger("72");
+		BigInteger ans = new BigInteger("-11");
+		assertEquals(ans, main.extendedEuclid(a, b)[1]);
+	}
+	
+	@Test
+	public void checkGCD() {
+		BigInteger a = new BigInteger("199");
+		BigInteger b = new BigInteger("241");
+		BigInteger ans = BigInteger.ONE;
+		assertEquals(ans, main.gcd(a, b));
 	}
 	
 	@Test
 	public void checkD(){
-		int e = 13, phi = 60;
-		assertEquals(37, main.getTheD(phi, e));
+		BigInteger phi = new BigInteger("60");
+		BigInteger e = new BigInteger("13");
+		BigInteger ans = new BigInteger("37");
+		assertEquals(ans, main.getD(phi, e));
 		
-		e = 761;
-		phi = 21580;
-		assertEquals(7061, main.getTheD(phi, e));
+		e = new BigInteger("761");
+		phi = new BigInteger("21580");
+		ans = new BigInteger("7061");
+		assertEquals(ans, main.getD(phi, e));
 	}
 	
 	@Test
 	public void checkCipher() {
-		String str = "Hello Mr Bond";
-		int e = 13, n = 7 * 13;
-		//assertEquals(73, main.produceCipher(str, e, n));
-		
-		e = 35771;		
-		//assertEquals(5, main.produceCipher(str, e, n));
+		String str = "Hi";
+		BigInteger e = new BigInteger("65537");
+		BigInteger n = new BigInteger("223").multiply(new BigInteger("179"));
+		BigInteger ans = new BigInteger("9717");
+		assertEquals(ans, main.produceCipher(str, e, n));
 	}
 	
 	@Test
 	public void checkDecipher() {
-		int cipher = 5;
-		int p = 7, q = 13, n = p * q, phi = (p-1) * (q-1), e = 35771;
-		//int d = main.getTheD(phi, e);
+		BigInteger phi = new BigInteger("196").multiply(new BigInteger("190"));
+		BigInteger e = new BigInteger("65537");
+		BigInteger d = main.getD(phi, e);
+		BigInteger n = new BigInteger("197").multiply(new BigInteger("191"));
+		BigInteger cipher = main.produceCipher("ab", e, n);
 		
-		//assertEquals("Hello Mr Bond", main.decipher(cipher, d, n));
-	}*/
+		assertEquals("ab", main.decipher(cipher, d, n));
+	}
 }
