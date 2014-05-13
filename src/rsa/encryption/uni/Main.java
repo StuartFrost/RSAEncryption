@@ -1,13 +1,19 @@
 package rsa.encryption.uni;
 
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.math.BigInteger;
 import java.util.Random;
 
 public class Main {
 	public Random random = new Random();
-	private BigInteger p;
-	private BigInteger q;
-	private int primeSize = 8;
+	public BigInteger p;
+	public BigInteger q;
+	public BigInteger n;	
+	public BigInteger phi;
+	public BigInteger e;
+	public BigInteger d;
+	public int primeSize = 256;
 	
 	public static void main(String[] args) {
 		new Main();
@@ -16,17 +22,11 @@ public class Main {
 	public Main() {
 		p = BigInteger.probablePrime(primeSize, random);
 		q = BigInteger.probablePrime(primeSize, random);
-		System.out.println("p: " + p + ", q: " + q);
-		BigInteger n = p.multiply(q);		
-		BigInteger phi = (p.subtract(BigInteger.ONE).multiply(q.subtract(BigInteger.ONE)));
-		BigInteger e = new BigInteger("65537");
+		n = p.multiply(q);		
+		phi = (p.subtract(BigInteger.ONE).multiply(q.subtract(BigInteger.ONE)));
+		e = new BigInteger("65537"); //Public key
 		checkE(e, phi);
-		BigInteger d = getD(phi, e);
-		
-		BigInteger cipher = produceCipher("Hi", e, n);
-		//System.out.println("Cipher: " + cipher);
-		//System.out.println("Deciphered: " + decipher(cipher, d, n));
-		System.out.println(gcd(p, q));
+		d = getD(phi, e); //Private key
 	}
 	
 	/** Calculates the greatest common divisor of two numbers.
@@ -135,5 +135,16 @@ public class Main {
 			result += (char) letters[i]; //Casts ascii values from each item in array to a char which is added to final string
 		}
 		return result;
+	}
+
+	/** Writes a single line of content to a .txt file */
+	public void writeToFile(String content, String filePath) {
+		try {
+			PrintWriter p = new PrintWriter(filePath);
+			p.print(content);
+			p.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
 	}
 }
