@@ -1,23 +1,22 @@
 package rsa.encryption.uni;
 
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.math.BigInteger;
 import java.util.Random;
 
 public class Main {
-	public Random random = new Random();
-	public BigInteger p;
-	public BigInteger q;
+	private Random random = new Random();
+	private BigInteger p;
+	private BigInteger q;
 	public BigInteger n;	
-	public BigInteger phi;
+	private BigInteger phi;
 	public BigInteger e;
 	public BigInteger d;
-	public int primeSize = 256;
-	
-	public static void main(String[] args) {
-		new Main();
-	}
+	private int primeSize = 256;
 	
 	public Main() {
 		p = BigInteger.probablePrime(primeSize, random);
@@ -25,7 +24,7 @@ public class Main {
 		n = p.multiply(q);		
 		phi = (p.subtract(BigInteger.ONE).multiply(q.subtract(BigInteger.ONE)));
 		e = new BigInteger("65537"); //Public key
-		checkE(e, phi);
+		checkE();
 		d = getD(phi, e); //Private key
 	}
 	
@@ -42,18 +41,20 @@ public class Main {
 	/** Checks 1 < e < phi and that e and phi are co-prime. If they are not, it generates new primes for p & q and checks again.
 	 * @param e - Value of e.
 	 * @param phi - Value of phi calculated earlier. */
-	public void checkE(BigInteger e, BigInteger phi) {
+	public void checkE() {
 		if(e.compareTo(BigInteger.ONE) == 1 && e.compareTo(phi) == -1 && gcd(phi, e).compareTo(BigInteger.ONE) != 0) {
 			p = BigInteger.probablePrime(primeSize, random);
 			q = BigInteger.probablePrime(primeSize, random);
-			checkE(e, phi);
+			n = p.multiply(q);		
+			phi = (p.subtract(BigInteger.ONE).multiply(q.subtract(BigInteger.ONE)));
+			checkE();
 		}
 	}
 	
 	/** Generates the private key using extendedEuclid method.
 	 * @param phi - The value of phi passed into extendedEuclid method.
 	 * @param e - The value of e to be passed into extendedEuclid method.
-	 * @return The value of d*/
+	 * @return BigInteger value of d.*/
 	public BigInteger getD(BigInteger phi, BigInteger e) {
 		BigInteger[] results = extendedEuclid(e, phi);
 		BigInteger b = results[1]; //Only 2nd item in array required, others are only used for the calculations
@@ -137,7 +138,9 @@ public class Main {
 		return result;
 	}
 
-	/** Writes a single line of content to a .txt file */
+	/** Writes a single line of content to a .txt file. 
+	 * @param content - String to be written to file.
+	 * @param filePath - Location of file to be written to.*/
 	public void writeToFile(String content, String filePath) {
 		try {
 			PrintWriter p = new PrintWriter(filePath);
@@ -146,5 +149,19 @@ public class Main {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	/** Reads a single line from a .txt file.
+	 * @param filePath - Location of file to be read.
+	 * @return A String containing content read from file. */
+	public String readFile(String filePath) {
+		String toReturn = "";
+		try {
+			BufferedReader r = new BufferedReader(new FileReader(filePath));
+			toReturn = r.readLine();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return toReturn;
 	}
 }

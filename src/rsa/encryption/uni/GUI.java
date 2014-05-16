@@ -13,7 +13,7 @@ import javax.swing.JTextField;
 public class GUI {
 
 	private JFrame frame;
-	private Main main = new Main();
+	private Main main;
 	private JTextField strToEncrypt;
 	private JButton btnCreateCipher;
 	private JButton btnDecrypt;
@@ -21,9 +21,18 @@ public class GUI {
 	private JLabel lblDecryptedString;
 	private JTextField cipher;
 	private JLabel lblCipher;
-	/**
-	 * Launch the application.
-	 */
+	
+	private String publicKeyLocation = System.getProperty("user.dir") + "\\Encryption\\publicKey.txt";
+	private String privateKeyLocation = System.getProperty("user.dir") + "\\Decryption\\privateKey.txt";
+	private String cipherLocation = System.getProperty("user.dir") + "\\Encryption\\cipher.txt";
+	private String decryptedStrLocation = System.getProperty("user.dir") + "\\Decryption\\decrypted.txt";
+	private String modulusLocation = System.getProperty("user.dir") + "\\Encryption\\modulus.txt";
+	
+	private BigInteger publicKey;
+	private BigInteger privateKey;
+	private BigInteger modulus;
+	
+	/** Launch the application. */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -36,17 +45,16 @@ public class GUI {
 			}
 		});
 	}
-
-	/**
-	 * Create the application.
-	 */
+	
 	public GUI() {
+		main = new Main();
+		privateKey = new BigInteger(main.readFile(privateKeyLocation));
+		publicKey = new BigInteger(main.readFile(publicKeyLocation));
+		modulus = new BigInteger(main.readFile(modulusLocation));
 		initialize();
 	}
 
-	/**
-	 * Initialize the contents of the frame.
-	 */
+	/** Initialize the contents of the frame, including all action listeners for buttons. */
 	private void initialize() {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 200, 315);
@@ -65,11 +73,12 @@ public class GUI {
 		JButton btnGenerateKeys = new JButton("Generate Keys");
 		btnGenerateKeys.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				main.writeToFile(main.e.toString(), System.getProperty("user.dir") + "\\publicKey.txt");
-				main.writeToFile(main.d.toString(), System.getProperty("user.dir") + "\\privateKey.txt");		
+				main = new Main(); //Generates new values to be written
+				main.writeToFile(main.e.toString(), publicKeyLocation);
+				main.writeToFile(main.d.toString(), privateKeyLocation);
+				main.writeToFile(main.n.toString(), modulusLocation);
 				cipher.setText("");
 				decryptedField.setText("");
-				main = new Main();
 			}
 		});
 		btnGenerateKeys.setBounds(10, 175, 159, 23);
@@ -78,8 +87,11 @@ public class GUI {
 		btnCreateCipher = new JButton("Create Cipher");
 		btnCreateCipher.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				String cipherText = main.produceCipher(strToEncrypt.getText(), main.e, main.n).toString();
+				publicKey = new BigInteger(main.readFile(publicKeyLocation));
+				modulus = new BigInteger(main.readFile(modulusLocation));
+				String cipherText = main.produceCipher(strToEncrypt.getText(), publicKey, modulus).toString();
 				cipher.setText(cipherText);
+				main.writeToFile(cipherText, cipherLocation);
 			}
 		});
 		btnCreateCipher.setBounds(10, 209, 159, 23);
@@ -88,8 +100,11 @@ public class GUI {
 		btnDecrypt = new JButton("Decrypt");
 		btnDecrypt.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				String decryptedText = main.decipher(new BigInteger(cipher.getText()), main.d, main.n);
+				privateKey = new BigInteger(main.readFile(privateKeyLocation));
+				modulus = new BigInteger(main.readFile(modulusLocation));
+				String decryptedText = main.decipher(new BigInteger(cipher.getText()), privateKey, modulus);
 				decryptedField.setText(decryptedText);
+				main.writeToFile(decryptedText, decryptedStrLocation);
 			}
 		});
 		btnDecrypt.setBounds(10, 243, 159, 23);
