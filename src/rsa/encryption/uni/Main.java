@@ -118,7 +118,7 @@ public class Main {
 	 * @param message - String to be encrypted.
 	 * @param e - Exponent, the power of the message will be raised to.
 	 * @param n - The 'mod' number in the equation.
-	 * @return int - Encrypted cipher of message.*/
+	 * @return BigInteger containing encrypted cipher of message. */
 	public BigInteger produceCipher(String message, BigInteger e, BigInteger m) {
 		BigInteger msg = new BigInteger(message.getBytes());
 		return msg.modPow(new BigInteger("" + e), new BigInteger("" + m));
