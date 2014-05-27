@@ -71,13 +71,6 @@ public class Main {
 		return d;
 	}
 	
-	/* def egcd(a, b):
-	if a == 0:
-		return (b, 0, 1)
-	else:
-		g, y, x = egcd(b % a, a)
-	return (g, x - (b // a) * y, y)
-	 */
 	/** Recursive algorithm that given 2 BigIntegers, solves euclids extended algorithm. 
 	 * @param a - First number, in this case the value of e.
 	 * @param b - Second number, in this case value of phi.
@@ -102,15 +95,15 @@ public class Main {
 		return results;
 	}
 
-	/*BigInteger cipher = new BigInteger("" + 1);
+	/*BigInteger cipher = new BigInteger("1");
 	BigInteger base = new BigInteger(message.getBytes());
 	BigInteger modulus = new BigInteger("" + m);
-	while(exponent > 0) {
+	while(e > 0) {
 		int currentBit = exponent % 2;
 		if(currentBit == 1) {
 			cipher = (base.modPow(new BigInteger("" + 2), modulus));
 		}
-		exponent = exponent / 2;
+		e = e / 2;
 		base = base.multiply(base).mod(modulus);
 	}
 	return cipher;*/
