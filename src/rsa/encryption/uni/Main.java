@@ -94,19 +94,7 @@ public class Main {
 		}				
 		return results;
 	}
-
-	/*BigInteger cipher = new BigInteger("1");
-	BigInteger base = new BigInteger(message.getBytes());
-	BigInteger modulus = new BigInteger("" + m);
-	while(e > 0) {
-		int currentBit = exponent % 2;
-		if(currentBit == 1) {
-			cipher = (base.modPow(new BigInteger("" + 2), modulus));
-		}
-		e = e / 2;
-		base = base.multiply(base).mod(modulus);
-	}
-	return cipher;*/
+	
 	/** Takes a string message and produces an encrypted cipher. Performs message(int form) ^ e % n.
 	 * @param message - String to be encrypted.
 	 * @param e - Exponent, the power of the message will be raised to.
